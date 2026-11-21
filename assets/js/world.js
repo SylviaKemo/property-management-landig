@@ -12,6 +12,8 @@
 
   mountScrollWorld(host, {
     embedded: true,
+    // slow connection / Data Saver (detected in smooth.js): stills only, no video download
+    stillsOnly: !!window.roomiesLite,
     nav: false,
     atmosphere: false,
     hint: '',

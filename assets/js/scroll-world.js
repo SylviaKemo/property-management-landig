@@ -212,10 +212,17 @@ function mountScrollWorld(container, config) {
   function loadClip(s) {
     // Under prefers-reduced-motion we never load the clips at all — the stills stay up
     // and simply cross-dissolve as you scroll. No scrubbed video motion, no decode cost.
-    if (reduce || s.loading || !s.clip) return;
+    // Roomies patch: `stillsOnly` (lite mode for slow connections / Data Saver) takes
+    // the same path — stills only, nothing downloaded.
+    if (reduce || config.stillsOnly || s.loading || !s.clip) return;
     s.loading = true;
     // Serve the lighter mobile encode on phones when one was provided.
     const url = (isMobile() && s.clipM) ? s.clipM : s.clip;
+    // Loading indicator (CSS spinner on the scene) until the first real frame paints;
+    // dropped after 20 s regardless, leaving the still poster up.
+    s.el.classList.add('is-loading');
+    const stopLoading = () => s.el.classList.remove('is-loading');
+    setTimeout(stopLoading, 20000);
     // Roomies patch: stream first, upgrade to an in-memory blob later.
     // 1) Point the video at the URL right away. Hosts that serve byte ranges
     //    (Vercel, any CDN) show frames within a second and can seek straight away.
@@ -227,15 +234,26 @@ function mountScrollWorld(container, config) {
     // Reveal the video (hide the still poster) only once a real frame has
     // painted — on iOS a seeked-but-never-played muted video stays blank, so
     // hiding the still on metadata alone would flash an empty scene.
-    v.addEventListener('seeked', () => { s.el.classList.add('has-clip'); }, { once: true });
+    v.addEventListener('seeked', () => { s.el.classList.add('has-clip'); stopLoading(); }, { once: true });
+    // Fallback: a clip that cannot play is removed so its still image shows instead.
+    v.addEventListener('error', () => {
+      if (v.src.startsWith('blob:')) return;      // the blob swap below handles itself
+      stopLoading();
+      if (!s.blobPending) { v.remove(); s.video = null; s.hasClip = false; s.ready = false; s.el.classList.remove('has-clip'); }
+    });
     v.addEventListener('loadeddata', () => { try { v.pause(); } catch (e) {} if (userReady) primeVideo(v); }, { once: true });
     v.src = url;
     s.el.appendChild(v); s.video = v; s.hasClip = true;
     // 2) Download the whole clip in the background and swap to it (keeping the
     //    frame): every seek is then local, and servers without range support
     //    (python -m http.server, where seekable stays [0,0]) still work.
+    s.blobPending = true;
     fetch(url).then(r => r.ok ? r.blob() : Promise.reject(new Error('404')))
       .then(blob => {
+        s.blobPending = false;
+        if (!v.isConnected) {                      // stream had failed and was removed: retry with the blob
+          s.el.appendChild(v); s.video = v; s.hasClip = true;
+        }
         const t = v.currentTime;
         s.ready = false;
         v.addEventListener('loadedmetadata', () => {
@@ -243,7 +261,10 @@ function mountScrollWorld(container, config) {
           s.ready = true; read();
         }, { once: true });
         v.src = URL.createObjectURL(blob);
-      }).catch(() => { /* keep streaming the URL */ });
+      }).catch(() => {
+        s.blobPending = false;
+        if (v.error) { stopLoading(); v.remove(); s.video = null; s.hasClip = false; s.ready = false; s.el.classList.remove('has-clip'); }
+      });
   }
 
   function read() {

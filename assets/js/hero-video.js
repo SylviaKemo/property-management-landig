@@ -43,10 +43,29 @@
   window.addEventListener('resize', onScroll);
   read();
 
-  // Reduced motion: keep the still poster and the text transitions, skip the video.
-  if (reduce) return;
+  // Reduced motion, or lite mode (slow connection / Data Saver, see smooth.js): keep the
+  // still poster and the text transitions, and never download the video.
+  if (reduce || window.roomiesLite) return;
 
   var src = (mobile && video.dataset.srcMobile) || video.dataset.src;
+
+  // Loading indicator: a "Loading video" pill until the first frame shows, and a thin
+  // honey bar along the bottom that fills as the full file downloads.
+  var stage = pin.querySelector('.hero-stage');
+  var loader = document.createElement('div');
+  loader.className = 'hero-loader';
+  loader.setAttribute('role', 'status');
+  loader.innerHTML = '<i aria-hidden="true"></i><span>Loading video</span>';
+  var bar = document.createElement('div');
+  bar.className = 'hero-progress';
+  bar.innerHTML = '<span></span>';
+  stage.appendChild(loader); stage.appendChild(bar);
+  function setProgress(p) { bar.firstChild.style.transform = 'scaleX(' + clamp(p).toFixed(3) + ')'; }
+  function hideLoader() { loader.classList.add('is-done'); }
+  function hideBar() { bar.classList.add('is-done'); }
+  // Give up gracefully: if nothing has shown after 15 s, drop the indicators and leave
+  // the still poster up (the download keeps going quietly in the background).
+  var giveUp = setTimeout(function () { if (!ready) { hideLoader(); hideBar(); } }, 15000);
 
   // 1) Stream straight away: hosts like Vercel serve byte ranges, so the first frames
   //    show within a second instead of waiting for the whole file.
@@ -54,16 +73,33 @@
   video.addEventListener('loadeddata', function () {
     ready = true;
     media.classList.add('is-ready');
+    hideLoader();
   }, { once: true });
+  video.addEventListener('error', function () {
+    // a broken stream leaves the poster up; the full download below may still rescue it
+    hideLoader();
+  });
   video.src = src;
 
-  // 2) Meanwhile download the full file; once it is in memory, swap to it (keeping the
-  //    current frame) so scrubbing is perfectly smooth and also works on servers
-  //    without range support (python -m http.server).
+  // 2) Meanwhile download the full file (reporting progress); once it is in memory,
+  //    swap to it (keeping the current frame) so scrubbing is perfectly smooth and also
+  //    works on servers without range support (python -m http.server).
   fetch(src).then(function (res) {
     if (!res.ok) throw new Error(res.status);
-    return res.blob();
+    var total = +res.headers.get('content-length') || 0;
+    if (!res.body || !total || !window.Response) return res.blob();
+    var reader = res.body.getReader(), chunks = [], got = 0;
+    function pump() {
+      return reader.read().then(function (r) {
+        if (r.done) return new Blob(chunks, { type: 'video/mp4' });
+        chunks.push(r.value); got += r.value.length; setProgress(got / total);
+        return pump();
+      });
+    }
+    return pump();
   }).then(function (blob) {
+    clearTimeout(giveUp);
+    setProgress(1); setTimeout(hideBar, 400); hideLoader();
     var t = video.currentTime || 0.001;
     var swapReady = false;
     video.addEventListener('loadedmetadata', function () {
@@ -75,7 +111,11 @@
     ready = false;                      // pause scrubbing for the instant of the swap
     video.src = URL.createObjectURL(blob);
     setTimeout(function () { if (!swapReady) ready = true; }, 1500);
-  }).catch(function () { /* keep streaming the original URL */ });
+  }).catch(function () {
+    // keep streaming the original URL; just stop showing download progress
+    hideBar();
+    if (ready) hideLoader();
+  });
 
   // iOS paints a muted, never-played video only after a gesture: prime it once.
   function prime() {

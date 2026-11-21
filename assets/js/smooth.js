@@ -3,6 +3,18 @@
    scroll-linked effect on the page (hero video, room cards, walkthrough, nav) keeps
    reading window.scrollY / getBoundingClientRect as before. Skipped entirely for
    visitors who prefer reduced motion: they get normal native scrolling. */
+/* Lite mode: visitors on a slow connection or with Data Saver on get the still images
+   (same text and animations) instead of the scroll videos, so the page never looks stuck.
+   Test it with ?lite=1 in the address bar; ?lite=0 forces the full videos. */
+(function () {
+  var force = /[?&]lite=([01])/.exec(location.search);
+  var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  var slow = !!c && (c.saveData === true || /(^|-)(2g|3g)$/.test(c.effectiveType || ''));
+  var reducedData = window.matchMedia && window.matchMedia('(prefers-reduced-data: reduce)').matches;
+  window.roomiesLite = force ? force[1] === '1' : (slow || reducedData);
+  if (window.roomiesLite) document.documentElement.classList.add('is-lite');
+})();
+
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var lenis = null;

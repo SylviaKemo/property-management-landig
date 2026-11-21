@@ -184,6 +184,32 @@ h1, h2, h3, h4, h5 { margin: 0; font-weight: 400; }
   opacity: clamp(0, calc(1 - var(--p) * 8), 1);
 }
 .hero-scroll i { width: 1px; height: 34px; background: linear-gradient(#fff, transparent); animation: heroScroll 1.8s ease-in-out infinite; transform-origin: top; }
+/* hero loading indicator: pill until the first frame, honey bar while downloading */
+.hero-loader {
+  position: absolute; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 9px 16px 9px 12px; border-radius: 999px;
+  background: rgba(20,20,20,.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: #fff; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  pointer-events: none; transition: opacity .5s var(--ease), transform .5s var(--ease);
+}
+.hero-loader i {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.25); border-top-color: var(--honey);
+  animation: spin .8s linear infinite;
+}
+.hero-loader.is-done { opacity: 0; transform: translate(-50%, -40%); }
+.hero-progress {
+  position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 3px;
+  background: rgba(255,255,255,.12); pointer-events: none; transition: opacity .6s var(--ease);
+}
+.hero-progress span {
+  display: block; height: 100%; background: var(--honey);
+  transform: scaleX(0); transform-origin: 0 50%; transition: transform .25s linear;
+}
+.hero-progress.is-done { opacity: 0; }
+/* lite mode (slow connection / Data Saver): no scroll hint for a video that isn't there */
+.is-lite .hero-scroll { display: none; }
 @keyframes heroScroll { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
 
 .reveal-lines > span { display: block; overflow: hidden; padding-bottom: .06em; }
@@ -502,6 +528,13 @@ h1, h2, h3, h4, h5 { margin: 0; font-weight: 400; }
 }
 .world .sw-copy__body { color: rgba(255,255,255,.85); }
 .world .sw-copy__tags li { color: #fff; background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.25); }
+/* walkthrough loading spinner: shown on a scene until its clip paints a frame */
+.world .sw-scene.is-loading::after {
+  content: ""; position: absolute; z-index: 5; right: clamp(18px, 4vw, 48px); bottom: clamp(18px, 4vw, 48px);
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.25); border-top-color: var(--honey);
+  animation: spin .8s linear infinite;
+}
 /* stripped-down walkthrough: just the eyebrow + title over the video */
 .world .sw-particles,
 .world .sw-route,
