@@ -252,7 +252,11 @@ h1, h2, h3, h4, h5 { margin: 0; font-weight: 400; }
 .marquee { margin-top: 110px; overflow: hidden; border-block: 1px solid var(--line); padding: 26px 0; }
 .marquee-track { display: flex; gap: 46px; width: max-content; animation: marquee 32s linear infinite; align-items: center; }
 .marquee-track span { font-family: var(--serif); font-size: 26px; white-space: nowrap; }
-.marquee-track i { font-style: normal; color: var(--honey-deep); }
+.marquee-track i { display: inline-flex; flex: 0 0 auto; }
+.marquee-track i svg {
+  width: 26px; height: 26px; fill: var(--honey-deep);
+  animation: spin 8s linear infinite;
+}
 @keyframes marquee { to { transform: translateX(-50%); } }
 
 
