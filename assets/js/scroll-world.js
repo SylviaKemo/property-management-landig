@@ -216,21 +216,34 @@ function mountScrollWorld(container, config) {
     s.loading = true;
     // Serve the lighter mobile encode on phones when one was provided.
     const url = (isMobile() && s.clipM) ? s.clipM : s.clip;
+    // Roomies patch: stream first, upgrade to an in-memory blob later.
+    // 1) Point the video at the URL right away. Hosts that serve byte ranges
+    //    (Vercel, any CDN) show frames within a second and can seek straight away.
+    const v = document.createElement('video');
+    v.className = 'sw-scene__video';
+    v.muted = true; v.playsInline = true; v.preload = 'auto';
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+    v.addEventListener('loadedmetadata', () => { s.ready = true; read(); });
+    // Reveal the video (hide the still poster) only once a real frame has
+    // painted — on iOS a seeked-but-never-played muted video stays blank, so
+    // hiding the still on metadata alone would flash an empty scene.
+    v.addEventListener('seeked', () => { s.el.classList.add('has-clip'); }, { once: true });
+    v.addEventListener('loadeddata', () => { try { v.pause(); } catch (e) {} if (userReady) primeVideo(v); }, { once: true });
+    v.src = url;
+    s.el.appendChild(v); s.video = v; s.hasClip = true;
+    // 2) Download the whole clip in the background and swap to it (keeping the
+    //    frame): every seek is then local, and servers without range support
+    //    (python -m http.server, where seekable stays [0,0]) still work.
     fetch(url).then(r => r.ok ? r.blob() : Promise.reject(new Error('404')))
       .then(blob => {
-        const v = document.createElement('video');
-        v.className = 'sw-scene__video';
-        v.muted = true; v.playsInline = true; v.preload = 'auto';
-        v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+        const t = v.currentTime;
+        s.ready = false;
+        v.addEventListener('loadedmetadata', () => {
+          try { v.currentTime = t; } catch (e) {}
+          s.ready = true; read();
+        }, { once: true });
         v.src = URL.createObjectURL(blob);
-        v.addEventListener('loadedmetadata', () => { s.ready = true; read(); });
-        // Reveal the video (hide the still poster) only once a real frame has
-        // painted — on iOS a seeked-but-never-played muted video stays blank, so
-        // hiding the still on metadata alone would flash an empty scene.
-        v.addEventListener('seeked', () => { s.el.classList.add('has-clip'); }, { once: true });
-        v.addEventListener('loadeddata', () => { try { v.pause(); } catch (e) {} if (userReady) primeVideo(v); });
-        s.el.appendChild(v); s.video = v; s.hasClip = true;
-      }).catch(() => { s.loading = false; });
+      }).catch(() => { /* keep streaming the URL */ });
   }
 
   function read() {
@@ -294,7 +307,9 @@ function mountScrollWorld(container, config) {
       // cur keeps lerping, so we snap to the latest target the moment it's free.
       if (s.video.seeking) continue;
       if (!s.visible && Math.abs(s.cur - s.target) < 0.002) continue;
-      s.cur += (s.target - s.cur) * (reduce ? 1 : 0.18);
+      // Lenis already eases the scroll itself, so follow it more tightly when it is
+      // running (double smoothing reads as lag); keep the softer ease otherwise.
+      s.cur += (s.target - s.cur) * (reduce ? 1 : (window.lenis ? 0.38 : 0.18));
       const dur = s.video.duration || 1;
       const t = clamp(s.cur, 0, 0.999) * dur;
       if (Math.abs(s.video.currentTime - t) > eps) { try { s.video.currentTime = t; } catch (e) {} }

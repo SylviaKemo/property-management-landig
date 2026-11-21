@@ -6,6 +6,9 @@
   var host = document.getElementById('world');
   if (!host || !window.mountScrollWorld) return;
   var R = 'assets/world/real2/';
+  // Clips re-encoded for fast seeking (keyframe every 2-3 frames, no B-frames) with
+  // lighter 640px versions for phones. Bump V whenever the clip files change.
+  var V = '?v=2';
 
   mountScrollWorld(host, {
     embedded: true,
@@ -17,21 +20,21 @@
     sections: [
       {
         id: 'hallway', label: 'Step inside',
-        still: R + 'walk-1.webp', clip: R + 'walk-1.mp4',
+        still: R + 'walk-1.webp', clip: R + 'walk-1.mp4' + V, clipMobile: R + 'walk-1-m.mp4' + V,
         accent: '#D9A441', scroll: 1.6, linger: 0.3,
         eyebrow: 'Take a walk through',
         title: 'Shared Spaces'
       },
       {
         id: 'kitchen', label: 'Kitchen',
-        still: R + 'walk-2.webp', clip: R + 'walk-2.mp4',
+        still: R + 'walk-2.webp', clip: R + 'walk-2.mp4' + V, clipMobile: R + 'walk-2-m.mp4' + V,
         accent: '#D9A441', scroll: 1.6, linger: 0.3,
         eyebrow: 'Shared spaces',
         title: 'The kitchen'
       },
       {
         id: 'balcony', label: 'Balcony',
-        still: R + 'walk-3.webp', clip: R + 'walk-3.mp4',
+        still: R + 'walk-3.webp', clip: R + 'walk-3.mp4' + V, clipMobile: R + 'walk-3-m.mp4' + V,
         accent: '#E8C13A', scroll: 1.7, linger: 0.35,
         eyebrow: 'Shared spaces',
         title: 'The balcony'
