@@ -47,17 +47,35 @@
   if (reduce) return;
 
   var src = (mobile && video.dataset.srcMobile) || video.dataset.src;
+
+  // 1) Stream straight away: hosts like Vercel serve byte ranges, so the first frames
+  //    show within a second instead of waiting for the whole file.
+  video.preload = 'auto';
+  video.addEventListener('loadeddata', function () {
+    ready = true;
+    media.classList.add('is-ready');
+  }, { once: true });
+  video.src = src;
+
+  // 2) Meanwhile download the full file; once it is in memory, swap to it (keeping the
+  //    current frame) so scrubbing is perfectly smooth and also works on servers
+  //    without range support (python -m http.server).
   fetch(src).then(function (res) {
     if (!res.ok) throw new Error(res.status);
     return res.blob();
   }).then(function (blob) {
-    video.src = URL.createObjectURL(blob);
+    var t = video.currentTime || 0.001;
+    var swapReady = false;
     video.addEventListener('loadedmetadata', function () {
+      swapReady = true;
+      try { video.currentTime = t; } catch (e) {}
       ready = true;
-      try { video.currentTime = 0.001; } catch (e) {}
+      media.classList.add('is-ready');
     }, { once: true });
-    video.addEventListener('seeked', function () { media.classList.add('is-ready'); }, { once: true });
-  }).catch(function () { /* poster stays up */ });
+    ready = false;                      // pause scrubbing for the instant of the swap
+    video.src = URL.createObjectURL(blob);
+    setTimeout(function () { if (!swapReady) ready = true; }, 1500);
+  }).catch(function () { /* keep streaming the original URL */ });
 
   // iOS paints a muted, never-played video only after a gesture: prime it once.
   function prime() {
