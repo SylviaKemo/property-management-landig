@@ -47,7 +47,7 @@
   ];
 
   const arcPhotos = [
-    "area-kitchen.jpg", "room-bigger-single.jpg", "area-dining.jpg", "hero-bedroom.jpg",
+    "area-kitchen.jpg", "room-bigger-single.jpg", "area-dining.jpg",
     "area-hallway.jpg", "room-ensuite-standard.jpg", "area-balcony.jpg", "room-balcony.jpg",
     "area-kitchen-2.jpg", "room-ensuite-larger.jpg", "area-washroom.jpg", "area-hallway-2.jpg",
     "room-compact.jpg", "area-laundry.jpg",
