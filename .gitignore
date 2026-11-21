@@ -1,0 +1,12 @@
+# Working media for the AI video pipeline (raw downloads, extracted frames,
+# reference screen recordings). The site itself only uses assets/.
+scroll-world/**
+!scroll-world/
+!scroll-world/**/
+!scroll-world/**/*.md
+
+# Local tooling / editor
+.claude/
+.vscode/
+.DS_Store
+Thumbs.db

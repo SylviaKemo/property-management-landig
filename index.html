@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Roomies Kenya — Shared Apartments in Kileleshwa</title>
+  <meta name="description" content="Furnished shared rooms in Kileleshwa, Nairobi. WiFi, cleaning, cooking gas and laundry included. Rooms from KES 18,000 per month." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400&family=Marcellus&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/vendor/lenis.css?v=1.1.13" />
+  <link rel="stylesheet" href="assets/css/style.css?v=20261121z" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 40'%3E%3Cpath d='M2 40V16a14 14 0 0 1 28 0v24z' fill='%23F5D547'/%3E%3C/svg%3E" />
+</head>
+<body>
+
+  <!-- Roomies Kenya logo mark (yellow arch + rising sun), reused in nav and footer.
+       Original artwork: assets/img/brand/roomies-logo.jpg -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="logo-mark" viewBox="0 0 40 52">
+      <path d="M2 52V20A18 18 0 0 1 38 20V52Z" fill="#F5D547" />
+      <g fill="none" stroke="#fff" stroke-width=".7" stroke-linecap="round" opacity=".92">
+        <path d="M14 44a6 6 0 0 1 12 0" />
+        <path d="M12.76 42.06 4.55 39.86M13.5 40.25 6.14 36M14.7 38.7 8.69 32.69M16.25 37.5 12 30.14M18.06 36.76 15.86 28.54M20 36.5V27M21.94 36.76 24.14 28.54M23.75 37.5 28 30.14M25.3 38.7 31.31 32.69M26.5 40.25 33.86 36M27.24 42.06 35.45 39.86" />
+      </g>
+    </symbol>
+  </svg>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <a href="#home" class="brand" aria-label="Roomies Kenya home">
+      <svg class="brand-arch" viewBox="0 0 40 52" aria-hidden="true"><use href="#logo-mark" /></svg>
+      <span class="brand-text">Roomies Kenya<small>Shared Apartments</small></span>
+    </a>
+
+    <nav class="nav-pill" aria-label="Primary">
+      <a href="#home" class="is-active">Home</a>
+      <a href="#rooms">Rooms</a>
+      <a href="#world">Spaces</a>
+      <a href="#about">About</a>
+      <a href="#amenities">Amenities</a>
+      <a href="#visit">Visit</a>
+    </nav>
+
+    <div class="nav-right">
+      <a class="nav-call" href="tel:+254794155001">
+        <span class="dot"></span>0794 155 001
+      </a>
+      <button class="nav-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home">Home</a>
+    <a href="#rooms">Rooms</a>
+    <a href="#world">Shared Spaces</a>
+    <a href="#about">About</a>
+    <a href="#amenities">Amenities</a>
+    <a href="#visit">Visit</a>
+    <a href="tel:+254794155001" class="mm-call">Call 0794 155 001</a>
+  </div>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="home">
+      <!-- Scroll-scrubbed video hero: the stage pins while the video plays with scroll -->
+      <div class="hero-pin" id="heroPin">
+        <div class="hero-stage">
+          <div class="hero-media" id="heroMedia">
+            <img class="hero-poster" src="assets/hero/hero-poster.webp?v=2" alt="" aria-hidden="true" />
+            <video class="hero-video" id="heroVideo" muted playsinline preload="auto"
+              data-src="assets/hero/hero.mp4?v=2" data-src-mobile="assets/hero/hero-m.mp4?v=2"
+              aria-hidden="true"></video>
+            <div class="hero-shade" aria-hidden="true"></div>
+          </div>
+          <div class="hero-inner" id="heroInner">
+            <h1 class="display reveal-lines">
+              <span><span>Convenient Living,</span></span>
+              <span><span>Heart of Kileleshwa</span></span>
+            </h1>
+            <a href="#visit" class="btn-dark fade-up">Book a Tour <span class="btn-ico">&#8594;</span></a>
+          </div>
+          <div class="hero-outro" id="heroOutro">
+            <p class="hero-outro-line">Modern Co-living<br/>Made simple in Kileleshwa</p>
+          </div>
+          <div class="hero-scroll" id="heroScroll" aria-hidden="true"><span>Scroll</span><i></i></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ROOMS ============ -->
+    <section class="rooms" id="rooms">
+      <div class="rooms-head">
+        <h2 class="display-xl">
+          <span class="line">Rooms for</span>
+          <span class="line indent">Every Budget</span>
+        </h2>
+        <a href="#visit" class="badge badge--star" aria-label="Book a tour">
+          <svg viewBox="-60 -60 120 120" aria-hidden="true">
+            <defs>
+              <path id="petal" d="M0 -4 C3 -18 11 -32 11 -45 A11 11 0 0 0 -11 -45 C-11 -32 -3 -18 0 -4Z" />
+            </defs>
+            <use href="#petal" /><use href="#petal" transform="rotate(45)" />
+            <use href="#petal" transform="rotate(90)" /><use href="#petal" transform="rotate(135)" />
+            <use href="#petal" transform="rotate(180)" /><use href="#petal" transform="rotate(225)" />
+            <use href="#petal" transform="rotate(270)" /><use href="#petal" transform="rotate(315)" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="ro" id="roomOptions" aria-label="Room types"><!-- room option cards injected by JS --></div>
+    </section>
+
+    <!-- ============ SCROLL WORLD (fly-through) ============ -->
+    <section class="world" id="world" aria-label="Shared spaces walkthrough"></section>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="about" id="about">
+      <div class="about-inner">
+        <div class="about-head">
+          <p class="eyebrow about-eyebrow">( About Roomies )</p>
+          <h2 class="about-title" data-split>Roomies Kenya: co&#8209;living, made simple in Kileleshwa</h2>
+          <svg class="about-star" viewBox="-60 -60 120 120" aria-hidden="true">
+            <use href="#petal" /><use href="#petal" transform="rotate(45)" />
+            <use href="#petal" transform="rotate(90)" /><use href="#petal" transform="rotate(135)" />
+            <use href="#petal" transform="rotate(180)" /><use href="#petal" transform="rotate(225)" />
+            <use href="#petal" transform="rotate(270)" /><use href="#petal" transform="rotate(315)" />
+          </svg>
+        </div>
+
+        <p class="about-lead" data-scrub>Nairobi's young professionals and digital natives are choosing new ways to live. Co-living is gaining traction across the city because it's <strong>affordable</strong>, <strong>flexible</strong> and builds <strong>community</strong> at a time of rising rents and changing lifestyles.</p>
+
+        <div class="about-cols">
+          <p class="reveal">At Roomies, we make that lifestyle accessible, without long-term commitments, hidden costs or isolation. Every room is furnished, every bill that matters is covered, and the shared spaces are cleaned for you.</p>
+          <div class="about-sign reveal">
+            <p>We handle the details.<br/><em>You enjoy the space.</em></p>
+            <a href="#visit" class="btn-dark">Contact Us <span class="btn-ico">&#8594;</span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span>High-speed WiFi</span><i>✳</i><span>Regular cleaning</span><i>✳</i><span>Cooking gas</span><i>✳</i><span>Washing machine</span><i>✳</i><span>Tenant support</span><i>✳</i><span>Kileleshwa, Nairobi</span><i>✳</i>
+          <span>High-speed WiFi</span><i>✳</i><span>Regular cleaning</span><i>✳</i><span>Cooking gas</span><i>✳</i><span>Washing machine</span><i>✳</i><span>Tenant support</span><i>✳</i><span>Kileleshwa, Nairobi</span><i>✳</i>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <!-- ============ STATS ============ -->
+    <section class="stats">
+      <div class="stats-arc" aria-hidden="true">
+        <div class="arc-track" id="arcTrack2"></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><b data-count="6">0</b><span>Room Types</span></div>
+        <div class="stat"><b data-count="18" data-suffix="k">0</b><span>Starting Price (KES / month)</span></div>
+        <div class="stat"><b data-count="5">0</b><span>Amenities Included</span></div>
+      </div>
+    </section>
+
+    <!-- ============ AMENITIES ============ -->
+    <section class="amenities" id="amenities">
+      <p class="eyebrow center">( What's Included )</p>
+      <h2 class="display-md center reveal">Everything you need,<br/>nothing you don't</h2>
+
+      <div class="amenity-list">
+        <article class="amenity reveal">
+          <h3>High-Speed<br/>WiFi</h3>
+          <div>
+            <p>Fast, reliable internet throughout the apartment &mdash; ready for remote work, study and streaming from day one.</p>
+            <ul class="tags"><li>Work from home</li><li>Always on</li></ul>
+          </div>
+        </article>
+        <article class="amenity reveal">
+          <h3>Regular<br/>Cleaning</h3>
+          <div>
+            <p>Shared spaces are cleaned on a schedule, so the kitchen, washrooms and hallways stay fresh without chore charts.</p>
+            <ul class="tags"><li>Shared spaces</li><li>Hassle-free</li></ul>
+          </div>
+        </article>
+        <article class="amenity reveal">
+          <h3>Cooking<br/>Gas</h3>
+          <div>
+            <p>A fully equipped shared kitchen with a gas cooker, fridge, microwave and dining table. Gas is covered.</p>
+            <ul class="tags"><li>Equipped kitchen</li><li>Dining area</li></ul>
+          </div>
+        </article>
+        <article class="amenity reveal">
+          <h3>Washing<br/>Machine</h3>
+          <div>
+            <p>On-site washing machine and laundry sink, so your weekends aren't spent at the laundromat.</p>
+            <ul class="tags"><li>Laundry access</li><li>On-site</li></ul>
+          </div>
+        </article>
+        <article class="amenity reveal">
+          <h3>Tenant<br/>Support</h3>
+          <div>
+            <p>A real person to call when something needs fixing. We look after maintenance so you don't have to.</p>
+            <ul class="tags"><li>Responsive</li><li>Well-managed</li></ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ VISIT ============ -->
+    <section class="visit" id="visit">
+      <div class="visit-inner">
+        <p class="eyebrow light">Roomies Kenya <span class="rule"></span></p>
+        <h2 class="display-xl light reveal">Plan your visit</h2>
+        <p class="visit-lead">See the space for yourself. Tell us when suits you and we'll confirm your tour on WhatsApp.</p>
+
+        <div class="visit-grid">
+          <div class="visit-side">
+            <h4>Request a Tour</h4>
+            <p>Or call us directly</p>
+            <a href="tel:+254794155001" class="visit-phone">0794 155 001</a>
+            <svg class="squiggle" viewBox="0 0 40 80" aria-hidden="true"><path d="M20 2c-14 8 14 16 0 24s14 16 0 24 10 14 0 22m0 0-6-6m6 6 6-6"/></svg>
+          </div>
+
+          <form class="visit-form" id="visitForm" novalidate>
+            <label>Name<input name="name" type="text" placeholder="Jane Wanjiru" required /></label>
+            <label>Phone<input name="phone" type="tel" placeholder="07xx xxx xxx" required /></label>
+            <label>Room of Interest
+              <select name="room">
+                <option>Any room</option>
+                <option>Compact Single Room &mdash; KES 18,000</option>
+                <option>Bigger Single Room &mdash; KES 20,000</option>
+                <option>Single Room with Balcony &mdash; KES 22,000</option>
+                <option>Ensuite Standard Size &mdash; KES 27,000</option>
+                <option>Ensuite Larger Size &mdash; KES 29,000</option>
+                <option>Master En-suite &mdash; KES 35,000</option>
+              </select>
+            </label>
+            <label>Preferred Date &amp; Time<input name="when" type="datetime-local" /></label>
+            <label>Message<textarea name="message" rows="3" placeholder="Anything we should know?"></textarea></label>
+            <label class="check"><input type="checkbox" name="consent" required /> I agree that my submitted details are used to arrange my visit.</label>
+            <button type="submit" class="btn-light">Request a Tour</button>
+            <p class="form-note" id="formNote" role="status"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SKETCH BAND ============ -->
+    <section class="sketch" aria-hidden="true">
+      <svg viewBox="0 0 1600 260" preserveAspectRatio="xMidYMax slice" id="sketch">
+        <g class="draw">
+          <!-- skyline of Kileleshwa-style apartment blocks -->
+          <path d="M0 250h1600"/>
+          <path d="M40 250V120h160v130M60 140h30v30H60zM110 140h30v30h-30zM160 140h20v30h-20zM60 190h30v30H60zM110 190h30v30h-30zM160 190h20v30h-20z"/>
+          <path d="M230 250V70h120v180M250 90h25v25h-25zM300 90h25v25h-25zM250 135h25v25h-25zM300 135h25v25h-25zM250 180h25v25h-25zM300 180h25v25h-25zM275 250v-30a15 15 0 0 1 30 0v30"/>
+          <path d="M380 250V150l60-40 60 40v100M410 170h20v25h-20zM450 170h20v25h-20zM425 250v-35h30v35"/>
+          <path d="M530 250V40h180v210M550 60h35v30h-35zM605 60h35v30h-35zM660 60h30v30h-30zM550 110h35v30h-35zM605 110h35v30h-35zM660 110h30v30h-30zM550 160h35v30h-35zM605 160h35v30h-35zM660 160h30v30h-30zM590 250v-40a30 30 0 0 1 60 0v40"/>
+          <path d="M740 250V100c0-30 120-30 120 0v150M770 130h25v30h-25zM805 130h25v30h-25zM770 180h25v30h-25zM805 180h25v30h-25z"/>
+          <path d="M880 250V90h140v160M900 110h40v30h-40zM960 110h40v30h-40zM900 160h40v30h-40zM960 160h40v30h-40zM935 250v-30h30v30"/>
+          <path d="M1050 250V30h110v220M1070 50h25v25h-25zM1115 50h25v25h-25zM1070 95h25v25h-25zM1115 95h25v25h-25zM1070 140h25v25h-25zM1115 140h25v25h-25zM1070 185h25v25h-25zM1115 185h25v25h-25z"/>
+          <path d="M1190 250V140h170v110M1210 160h30v30h-30zM1260 160h30v30h-30zM1310 160h30v30h-30zM1255 250v-30a20 20 0 0 1 40 0v30"/>
+          <path d="M1390 250V80h170v170M1410 100h35v30h-35zM1460 100h35v30h-35zM1510 100h30v30h-30zM1410 150h35v30h-35zM1460 150h35v30h-35zM1510 150h30v30h-30z"/>
+          <!-- trees -->
+          <path d="M215 250v-30m0 0c-14 0-16-22 0-26 16 4 14 26 0 26zM725 250v-34m0 0c-16 0-18-26 0-30 18 4 16 30 0 30zM1035 250v-28m0 0c-12 0-14-20 0-24 14 4 12 24 0 24zM1375 250v-34m0 0c-16 0-18-26 0-30 18 4 16 30 0 30z"/>
+        </g>
+      </svg>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <h5>Website map</h5>
+        <ul class="fmap">
+          <li><a href="#home">Home</a></li><li><a href="#rooms">Rooms</a></li>
+          <li><a href="#world">Shared Spaces</a></li><li><a href="#about">About</a></li>
+          <li><a href="#amenities">Amenities</a></li><li><a href="#visit">Visit</a></li>
+        </ul>
+        <h5 class="mt">Message us</h5>
+        <a class="wa-pill" href="https://wa.me/254794155001" target="_blank" rel="noopener">WhatsApp <span>&#8594;</span></a>
+      </div>
+      <div class="fcenter">
+        <p>We handle the details, you enjoy the space</p>
+        <svg class="brand-arch big" viewBox="0 0 40 52" aria-hidden="true"><use href="#logo-mark" /></svg>
+        <div class="fbrand">Roomies Kenya<small>Shared Apartments</small></div>
+        <p class="copy">&copy; <span id="yr">2026</span> Roomies Kenya. All rights reserved.</p>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <p>Tel. <a href="tel:+254794155001">0794 155 001</a></p>
+        <p>Kile Alps, Gichugu Rd<br/>Kileleshwa, Nairobi</p>
+        <p><a href="https://www.google.com/maps/search/?api=1&query=Kile+Alps+Gichugu+Road+Kileleshwa+Nairobi" target="_blank" rel="noopener" class="ulink">Open in Maps &#8599;</a></p>
+        <h5 class="mt">Follow</h5>
+        <div class="socials">
+          <a href="#" aria-label="X">&#120143;</a><a href="#" aria-label="Facebook">f</a><a href="#" aria-label="Instagram">ig</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- go to top: ring shows how far down the page you are -->
+  <button class="to-top" id="toTop" type="button" aria-label="Back to top">
+    <svg class="to-top__ring" viewBox="0 0 52 52" aria-hidden="true">
+      <circle cx="26" cy="26" r="24" />
+      <circle class="to-top__bar" id="toTopBar" cx="26" cy="26" r="24" />
+    </svg>
+    <span aria-hidden="true">&#8593;</span>
+  </button>
+
+  <script src="assets/vendor/lenis.min.js?v=1.1.13"></script>
+  <script src="assets/js/smooth.js?v=20261121z"></script>
+  <script src="assets/js/main.js?v=20261121z"></script>
+  <script src="assets/js/hero-video.js?v=20261121z"></script>
+  <script src="assets/js/scroll-world.js?v=20261121z"></script>
+  <script src="assets/js/world.js?v=20261121z"></script>
+</body>
+</html>
