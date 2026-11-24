@@ -61,7 +61,7 @@
   // still ~13 screens away. A link straight to a section builds it immediately.
   if (location.hash && location.hash.length > 1) mount();
   else {
-    ['scroll', 'wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(function (ev) {
+    ['wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(function (ev) {
       window.addEventListener(ev, function () { idle(mount); }, { once: true, passive: true });
     });
   }
@@ -83,12 +83,20 @@
   var heroDone = !!window.roomiesHeroDone, engaged = false;
   function maybeStart() { if (heroDone && engaged) startPreload(); }
   if (!heroDone) window.addEventListener('roomies:hero-done', function () { heroDone = true; maybeStart(); }, { once: true });
-  ['scroll', 'wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(function (ev) {
+  ['wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(function (ev) {
     window.addEventListener(ev, function onFirst() {
       if (engaged) return;
       engaged = true; maybeStart();
     }, { once: true, passive: true });
   });
+  // A scroll only counts as interaction once the page has really moved (e.g. the
+  // scrollbar was dragged); the scroll event fired automatically at load does not.
+  window.addEventListener('scroll', function onMoved() {
+    if (window.scrollY < 150) return;
+    window.removeEventListener('scroll', onMoved);
+    idle(mount);
+    if (!engaged) { engaged = true; maybeStart(); }
+  }, { passive: true });
   var hero = document.getElementById('heroPin');
   window.addEventListener('scroll', function onScroll() {
     if (hero && hero.getBoundingClientRect().bottom < window.innerHeight) {
