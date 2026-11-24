@@ -345,7 +345,18 @@ function mountScrollWorld(container, config) {
     ticking = false;
   }
 
+  // Roomies patch: run the frame loop only while the section is on (or near) the
+  // screen — it sits far down the page and has nothing to do otherwise.
+  let near = true, rafOn = false;
+  function startRaf() { if (!rafOn) { rafOn = true; requestAnimationFrame(raf); } }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      near = entries[0].isIntersecting;
+      if (near) startRaf();
+    }, { rootMargin: '100% 0px' }).observe(container);
+  }
   function raf() {
+    if (!near) { rafOn = false; return; }
     const eps = isMobile() ? 0.02 : 0.008;   // coarser seek step on phones = fewer decodes
     for (let i = 0; i < NSEG; i++) {
       const s = SEGMENTS[i];
@@ -399,7 +410,7 @@ function mountScrollWorld(container, config) {
   window.addEventListener('orientationchange', layout);
   window.addEventListener('load', layout);
   layout();
-  requestAnimationFrame(raf);
+  startRaf();
 
   // ---- helpers ----
   function el(tag, cls) { const n = document.createElement(tag); if (cls) n.className = cls; return n; }

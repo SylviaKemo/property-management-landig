@@ -28,7 +28,11 @@
 
   // Smoothly ease currentTime toward the scroll target; never queue a seek while one
   // is still in flight (keeps fast flicks from freezing the decoder on phones).
+  // The loop only runs while the hero is on screen (IntersectionObserver below), so it
+  // costs nothing once the visitor has scrolled on.
+  var heroVisible = true, looping = false;
   function loop() {
+    if (!heroVisible) { looping = false; return; }
     if (ready && !video.seeking) {
       cur += (target - cur) * 0.16;
       var t = Math.min(cur, 0.999) * (video.duration || 0);
@@ -37,6 +41,13 @@
       }
     }
     requestAnimationFrame(loop);
+  }
+  function startLoop() { if (!looping) { looping = true; requestAnimationFrame(loop); } }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      heroVisible = entries[0].isIntersecting;
+      if (heroVisible) startLoop();
+    }).observe(pin);
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -66,7 +77,7 @@
     if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
   }
   whenPageLoaded(startVideo);
-  requestAnimationFrame(loop);
+  startLoop();
   function startVideo() {
 
   // Loading indicator: a "Loading video" pill until the first frame shows, and a thin

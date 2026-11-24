@@ -57,8 +57,18 @@
   /* Each photo is cut into thin vertical slices, and every slice sits on the
      inside of a cylinder. Seen up close in perspective, the cards' top and
      bottom edges bend and the side cards loom larger — the "panorama" look. */
-  function makeArc(track, { speed = 0.6, widthRatio = 0.19, mobileRatio = 0.5, slices = 8, heightRatio = 1.72 } = {}) {
+  // Build the strip only when the visitor gets within ~2 screens of it: it is far down
+  // the page and creating ~200 slices up front slows the first load.
+  function makeArc(track, opts) {
     if (!track) return;
+    const io = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) return;
+      io.disconnect();
+      buildArc(track, opts);
+    }, { rootMargin: "1600px 0px" });
+    io.observe(track.parentElement);
+  }
+  function buildArc(track, { speed = 0.6, widthRatio = 0.19, mobileRatio = 0.5, slices = 8, heightRatio = 1.72 } = {}) {
     const arc = track.parentElement;
     const list = [...arcPhotos, ...arcPhotos];
     // light 640px WebP copies (assets/img/web/), lazy so they load only near the strip
