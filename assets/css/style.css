@@ -487,6 +487,18 @@ h1, h2, h3, h4, h5 { margin: 0; font-weight: 400; }
   .marquee-track { animation: none; }
 }
 
+/* ---------- performance ---------- */
+/* The browser skips layout/paint for these lower sections until they are near the
+   screen; `auto` remembers each one's real size once it has been seen. */
+.stats, .amenities, .visit, .sketch, .footer { content-visibility: auto; }
+.stats { contain-intrinsic-size: auto 760px; }
+.amenities { contain-intrinsic-size: auto 1400px; }
+.visit { contain-intrinsic-size: auto 1000px; }
+.sketch { contain-intrinsic-size: auto 320px; }
+.footer { contain-intrinsic-size: auto 600px; }
+/* endless decorative animations pause while their section is off screen (main.js) */
+.is-offscreen, .is-offscreen *, .is-offscreen::after { animation-play-state: paused !important; }
+
 /* ---------- go to top ---------- */
 .to-top {
   position: fixed; right: clamp(16px, 2.4vw, 32px); bottom: clamp(16px, 2.4vw, 32px); z-index: 45;

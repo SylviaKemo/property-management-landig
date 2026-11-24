@@ -38,7 +38,18 @@
       // start() + force: a link tapped inside the open mobile menu fires while Lenis is
       // still paused for the menu, so make sure it is running before scrolling.
       lenis.start();
-      lenis.scrollTo(target, { offset: 0, duration: 1.6, immediate: !!immediate, force: true });
+      lenis.scrollTo(target, {
+        offset: 0, duration: 1.6, immediate: !!immediate, force: true,
+        // Sections lower down are laid out lazily (content-visibility), so their real
+        // size is only known once rendered: if the target moved while we scrolled,
+        // finish with a short correction so it lands exactly.
+        onComplete: function () {
+          if (typeof target === 'number') return;
+          var el = typeof target === 'string' ? document.querySelector(target) : target;
+          var off = el && el.getBoundingClientRect().top;
+          if (off && Math.abs(off) > 2) lenis.scrollTo(el, { offset: 0, duration: 0.5, force: true });
+        }
+      });
     } else {
       var top = typeof target === 'number' ? target
         : (typeof target === 'string' ? document.querySelector(target) : target).getBoundingClientRect().top + window.scrollY;

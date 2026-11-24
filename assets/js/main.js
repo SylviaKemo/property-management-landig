@@ -53,6 +53,20 @@
     "room-compact.jpg", "area-laundry.jpg",
   ];
 
+  /* ---------------- pause off-screen decorative animations ---------------- */
+  // The ticker, spinning stars and badges loop forever; while their section is off
+  // screen they would still make the browser redraw every frame. Toggle a class
+  // that pauses them (see .is-offscreen in style.css).
+  (function pauseOffscreen() {
+    const targets = $$(".rooms-head, .about, .visit, .hero-scroll");
+    if (!("IntersectionObserver" in window) || !targets.length) return;
+    targets.forEach((t) => t.classList.add("is-offscreen"));
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => e.target.classList.toggle("is-offscreen", !e.isIntersecting));
+    }, { rootMargin: "100px 0px" });
+    targets.forEach((t) => io.observe(t));
+  })();
+
   /* ---------------- curved 3D strip ---------------- */
   /* Each photo is cut into thin vertical slices, and every slice sits on the
      inside of a cylinder. Seen up close in perspective, the cards' top and
