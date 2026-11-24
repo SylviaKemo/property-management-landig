@@ -57,14 +57,16 @@
   /* Each photo is cut into thin vertical slices, and every slice sits on the
      inside of a cylinder. Seen up close in perspective, the cards' top and
      bottom edges bend and the side cards loom larger — the "panorama" look. */
-  function makeArc(track, { speed = 0.6, widthRatio = 0.19, mobileRatio = 0.5, slices = 12, heightRatio = 1.72 } = {}) {
+  function makeArc(track, { speed = 0.6, widthRatio = 0.19, mobileRatio = 0.5, slices = 8, heightRatio = 1.72 } = {}) {
     if (!track) return;
     const arc = track.parentElement;
     const list = [...arcPhotos, ...arcPhotos];
+    // light 640px WebP copies (assets/img/web/), lazy so they load only near the strip
     track.innerHTML = list
       .map((src) => {
+        const web = `${IMG}web/${src.replace(/\.jpg$/, "-640.webp")}`;
         let s = "";
-        for (let j = 0; j < slices; j++) s += `<div class="arc-slice"><img src="${IMG + src}" alt="" draggable="false"></div>`;
+        for (let j = 0; j < slices; j++) s += `<div class="arc-slice"><img src="${web}" alt="" draggable="false" loading="lazy" decoding="async"></div>`;
         return s;
       })
       .join("");
@@ -97,8 +99,17 @@
     layout();
     addEventListener("resize", layout);
 
+    // Only animate while the strip is on (or near) the screen: off screen it would
+    // otherwise restyle every slice 60 times a second for nothing.
+    let onScreen = false, running = false;
+    new IntersectionObserver((entries) => {
+      onScreen = entries[0].isIntersecting;
+      if (onScreen && !running) { running = true; requestAnimationFrame(frame); }
+    }, { rootMargin: "200px 0px" }).observe(arc);
+
     let offset = 0;
     function frame() {
+      if (!onScreen || document.hidden) { running = false; return; }
       offset = (offset + (reduceMotion ? 0 : speed)) % total;
       for (let k = 0; k < els.length; k++) {
         const card = Math.floor(k / slices), j = k % slices;
@@ -114,7 +125,9 @@
       }
       requestAnimationFrame(frame);
     }
-    requestAnimationFrame(frame);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && onScreen && !running) { running = true; requestAnimationFrame(frame); }
+    });
   }
   makeArc($("#arcTrack"));
   makeArc($("#arcTrack2"), { speed: -0.4, widthRatio: 0.15, mobileRatio: 0.42, heightRatio: 1.5 });
@@ -143,11 +156,13 @@
   const optionsEl = $("#roomOptions");
   if (optionsEl) {
     const detailPos = ["30% 60%", "70% 55%", "35% 45%", "75% 40%", "25% 50%", "60% 60%"];
+    // 960px WebP copies of the room photos (assets/img/web/) — a fraction of the JPEG weight
+    const web960 = (f) => `${IMG}web/${f.replace(/\.jpg$/, "-960.webp")}`;
     const items = rooms.map((r, i) => ({
       kicker: r.kicker, title: r.name,
       meta: `KES ${r.price} <small>/ month</small>`,
-      a: { src: IMG + r.img, pos: detailPos[i % detailPos.length], zoom: true, alt: `${r.name}, detail` },
-      b: { src: IMG + r.img, pos: "50% 50%", alt: `${r.name} at Roomies Kenya` },
+      a: { src: web960(r.img), pos: detailPos[i % detailPos.length], zoom: true, alt: `${r.name}, detail` },
+      b: { src: web960(r.img), pos: "50% 50%", alt: `${r.name} at Roomies Kenya` },
       pill: "Book a viewing", room: r.name, bar: r.bar,
     }));
     optionsEl.innerHTML = items.map((it) => `

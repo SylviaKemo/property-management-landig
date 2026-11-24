@@ -47,13 +47,21 @@
   });
 
   // Preload the walkthrough clips well before the visitor gets here (the section
-  // starts ~13 screens down). Start as soon as the hero video has finished
-  // downloading, or after 8 s, or the moment the visitor scrolls past the hero —
-  // whichever comes first. Clips then load one at a time in scroll order.
+  // starts ~13 screens down). Start once the hero video has finished downloading AND
+  // the visitor has started using the page (first scroll, tap or key) — every real
+  // visitor does that long before reaching this section, while the initial page load
+  // stays light. Scrolling past the hero starts it regardless. Clips then load one
+  // at a time in scroll order.
   function startPreload() { if (host.swPreload) host.swPreload(); }
-  if (window.roomiesHeroDone) startPreload();
-  else window.addEventListener('roomies:hero-done', startPreload, { once: true });
-  setTimeout(startPreload, 8000);
+  var heroDone = !!window.roomiesHeroDone, engaged = false;
+  function maybeStart() { if (heroDone && engaged) startPreload(); }
+  if (!heroDone) window.addEventListener('roomies:hero-done', function () { heroDone = true; maybeStart(); }, { once: true });
+  ['scroll', 'wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(function (ev) {
+    window.addEventListener(ev, function onFirst() {
+      if (engaged) return;
+      engaged = true; maybeStart();
+    }, { once: true, passive: true });
+  });
   var hero = document.getElementById('heroPin');
   window.addEventListener('scroll', function onScroll() {
     if (hero && hero.getBoundingClientRect().bottom < window.innerHeight) {

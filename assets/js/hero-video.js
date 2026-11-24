@@ -59,6 +59,16 @@
 
   var src = (mobile && video.dataset.srcMobile) || video.dataset.src;
 
+  // Let the page finish loading first (the still poster is already showing), then
+  // start the video, so the download doesn't compete with the page's first paint.
+  function whenPageLoaded(fn) {
+    var go = function () { (window.requestIdleCallback || setTimeout)(fn, { timeout: 1200 }); };
+    if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
+  }
+  whenPageLoaded(startVideo);
+  requestAnimationFrame(loop);
+  function startVideo() {
+
   // Loading indicator: a "Loading video" pill until the first frame shows, and a thin
   // honey bar along the bottom that fills as the full file downloads.
   var stage = pin.querySelector('.hero-stage');
@@ -135,6 +145,5 @@
     if (p && p.then) p.then(function () { video.pause(); }).catch(function () {});
   }
   window.addEventListener('touchstart', prime, { once: true, passive: true });
-
-  requestAnimationFrame(loop);
+  } // end startVideo
 })();

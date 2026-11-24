@@ -7,9 +7,15 @@
   <meta name="description" content="Furnished shared rooms in Kileleshwa, Nairobi. WiFi, cleaning, cooking gas and laundry included. Rooms from KES 18,000 per month." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400&family=Marcellus&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Google Fonts loaded without blocking the first paint (text shows in the fallback
+       font for a moment, then swaps). -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400&family=Marcellus&family=Manrope:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400&family=Marcellus&family=Manrope:wght@400;500;600;700&display=swap" /></noscript>
+  <!-- the hero's first frame is the first thing people see: fetch it early -->
+  <link rel="preload" as="image" href="assets/hero/hero-poster-1280.webp?v=4"
+        imagesrcset="assets/hero/hero-poster-720.webp?v=4 720w, assets/hero/hero-poster-1280.webp?v=4 1280w" imagesizes="100vw" fetchpriority="high" />
   <link rel="stylesheet" href="assets/vendor/lenis.css?v=1.1.13" />
-  <link rel="stylesheet" href="assets/css/style.css?v=20261124b" />
+  <link rel="stylesheet" href="assets/css/style.css?v=20261124c" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 40'%3E%3Cpath d='M2 40V16a14 14 0 0 1 28 0v24z' fill='%23F5D547'/%3E%3C/svg%3E" />
 </head>
 <body>
@@ -75,7 +81,9 @@
       <div class="hero-pin" id="heroPin">
         <div class="hero-stage">
           <div class="hero-media" id="heroMedia">
-            <img class="hero-poster" src="assets/hero/hero-poster.webp?v=3" alt="" aria-hidden="true" />
+            <img class="hero-poster" src="assets/hero/hero-poster-1280.webp?v=4"
+                 srcset="assets/hero/hero-poster-720.webp?v=4 720w, assets/hero/hero-poster-1280.webp?v=4 1280w"
+                 sizes="100vw" fetchpriority="high" decoding="async" alt="" aria-hidden="true" />
             <video class="hero-video" id="heroVideo" muted playsinline preload="auto"
               data-src="assets/hero/hero.mp4?v=3" data-src-mobile="assets/hero/hero-m.mp4?v=3"
               aria-hidden="true"></video>
@@ -317,10 +325,10 @@
   </button>
 
   <script src="assets/vendor/lenis.min.js?v=1.1.13"></script>
-  <script src="assets/js/smooth.js?v=20261124b"></script>
-  <script src="assets/js/main.js?v=20261124b"></script>
-  <script src="assets/js/hero-video.js?v=20261124b"></script>
-  <script src="assets/js/scroll-world.js?v=20261124b"></script>
-  <script src="assets/js/world.js?v=20261124b"></script>
+  <script src="assets/js/smooth.js?v=20261124c"></script>
+  <script src="assets/js/main.js?v=20261124c"></script>
+  <script src="assets/js/hero-video.js?v=20261124c"></script>
+  <script src="assets/js/scroll-world.js?v=20261124c"></script>
+  <script src="assets/js/world.js?v=20261124c"></script>
 </body>
 </html>
