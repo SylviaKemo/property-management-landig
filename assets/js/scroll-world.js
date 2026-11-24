@@ -209,7 +209,10 @@ function mountScrollWorld(container, config) {
     window.scrollTo({ top: base + seg.start + (seg.end - seg.start) * 0.5, behavior: reduce ? 'auto' : 'smooth' });
   }
 
-  function loadClip(s) {
+  // `background` = preloading ahead of time (see preloadAll): skip the streaming
+  // request and only download the full clip; streaming starts later only if the
+  // visitor reaches the scene before that download has finished (see read()).
+  function loadClip(s, background) {
     // Under prefers-reduced-motion we never load the clips at all — the stills stay up
     // and simply cross-dissolve as you scroll. No scrubbed video motion, no decode cost.
     // Roomies patch: `stillsOnly` (lite mode for slow connections / Data Saver) takes
@@ -242,15 +245,16 @@ function mountScrollWorld(container, config) {
       if (!s.blobPending) { v.remove(); s.video = null; s.hasClip = false; s.ready = false; s.el.classList.remove('has-clip'); }
     });
     v.addEventListener('loadeddata', () => { try { v.pause(); } catch (e) {} if (userReady) primeVideo(v); }, { once: true });
-    v.src = url;
+    if (background) s.streamUrl = url; else v.src = url;
     s.el.appendChild(v); s.video = v; s.hasClip = true;
     // 2) Download the whole clip in the background and swap to it (keeping the
     //    frame): every seek is then local, and servers without range support
     //    (python -m http.server, where seekable stays [0,0]) still work.
     s.blobPending = true;
-    fetch(url).then(r => r.ok ? r.blob() : Promise.reject(new Error('404')))
+    s.blobPromise = fetch(url).then(r => r.ok ? r.blob() : Promise.reject(new Error('404')))
       .then(blob => {
         s.blobPending = false;
+        s.streamUrl = null;
         if (!v.isConnected) {                      // stream had failed and was removed: retry with the blob
           s.el.appendChild(v); s.video = v; s.hasClip = true;
         }
@@ -267,6 +271,25 @@ function mountScrollWorld(container, config) {
       });
   }
 
+  // Roomies patch: warm every clip ahead of time, one after another (in scroll order,
+  // so the first scene is ready first), without competing for bandwidth. Called by the
+  // page once the hero video has loaded, long before the visitor reaches this section.
+  let preloading = false;
+  function preloadAll() {
+    if (preloading || reduce || config.stillsOnly) return;
+    preloading = true;
+    let i = 0;
+    const next = () => {
+      if (i >= NSEG) return;
+      const s = SEGMENTS[i++];
+      if (!s.clip) return next();
+      loadClip(s, true);
+      (s.blobPromise || Promise.resolve()).then(next, next);
+    };
+    next();
+  }
+  container.swPreload = preloadAll;
+
   function read() {
     const y = EMBED ? -container.getBoundingClientRect().top : (window.scrollY || window.pageYOffset);
     const fade = CROSSFADE * vh;
@@ -275,7 +298,11 @@ function mountScrollWorld(container, config) {
 
     for (let i = 0; i < NSEG; i++) {
       const s = SEGMENTS[i];
-      if (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh) loadClip(s);
+      if (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh) {
+        loadClip(s);
+        // preloaded in the background but not finished yet: start streaming now
+        if (s.streamUrl && s.video && !s.video.getAttribute('src')) { s.video.src = s.streamUrl; s.streamUrl = null; }
+      }
       const local = clamp((y - s.start) / (s.end - s.start), 0, 1);
       s.target = s.linger ? lingerEase(local, s.linger) : local;
       let outside = 0;

@@ -45,4 +45,20 @@
     // Each clip already glides into the next room, so no separate connectors.
     connectors: [null, null]
   });
+
+  // Preload the walkthrough clips well before the visitor gets here (the section
+  // starts ~13 screens down). Start as soon as the hero video has finished
+  // downloading, or after 8 s, or the moment the visitor scrolls past the hero —
+  // whichever comes first. Clips then load one at a time in scroll order.
+  function startPreload() { if (host.swPreload) host.swPreload(); }
+  if (window.roomiesHeroDone) startPreload();
+  else window.addEventListener('roomies:hero-done', startPreload, { once: true });
+  setTimeout(startPreload, 8000);
+  var hero = document.getElementById('heroPin');
+  window.addEventListener('scroll', function onScroll() {
+    if (hero && hero.getBoundingClientRect().bottom < window.innerHeight) {
+      window.removeEventListener('scroll', onScroll);
+      startPreload();
+    }
+  }, { passive: true });
 })();

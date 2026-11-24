@@ -43,9 +43,19 @@
   window.addEventListener('resize', onScroll);
   read();
 
+  // Tell the rest of the page when the hero has finished with the network, so the
+  // walkthrough can start preloading its clips without slowing the hero down.
+  var announced = false;
+  function heroDone() {
+    if (announced) return;
+    announced = true;
+    window.roomiesHeroDone = true;
+    window.dispatchEvent(new Event('roomies:hero-done'));
+  }
+
   // Reduced motion, or lite mode (slow connection / Data Saver, see smooth.js): keep the
   // still poster and the text transitions, and never download the video.
-  if (reduce || window.roomiesLite) return;
+  if (reduce || window.roomiesLite) { heroDone(); return; }
 
   var src = (mobile && video.dataset.srcMobile) || video.dataset.src;
 
@@ -65,7 +75,7 @@
   function hideBar() { bar.classList.add('is-done'); }
   // Give up gracefully: if nothing has shown after 15 s, drop the indicators and leave
   // the still poster up (the download keeps going quietly in the background).
-  var giveUp = setTimeout(function () { if (!ready) { hideLoader(); hideBar(); } }, 15000);
+  var giveUp = setTimeout(function () { if (!ready) { hideLoader(); hideBar(); } heroDone(); }, 15000);
 
   // 1) Stream straight away: hosts like Vercel serve byte ranges, so the first frames
   //    show within a second instead of waiting for the whole file.
@@ -100,6 +110,7 @@
   }).then(function (blob) {
     clearTimeout(giveUp);
     setProgress(1); setTimeout(hideBar, 400); hideLoader();
+    heroDone();
     var t = video.currentTime || 0.001;
     var swapReady = false;
     video.addEventListener('loadedmetadata', function () {
@@ -115,6 +126,7 @@
     // keep streaming the original URL; just stop showing download progress
     hideBar();
     if (ready) hideLoader();
+    heroDone();
   });
 
   // iOS paints a muted, never-played video only after a gesture: prime it once.
