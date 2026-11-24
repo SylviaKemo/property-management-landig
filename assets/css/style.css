@@ -510,6 +510,9 @@ h1, h2, h3, h4, h5 { margin: 0; font-weight: 400; }
 /* dark theme: the engine's copy scrim and title shadow follow --sw-bg, so a dark
    --sw-bg turns them into a dark overlay; --sw-ink is the (now white) text colour */
 .world {
+  /* reserve the walkthrough's height before world.js builds it after load:
+     100vh pinned stage + (1.6 + 1.6 + 1.7) screens of scroll = 590vh */
+  min-height: 590vh;
   --sw-bg: #141414;
   --sw-ink: #ffffff;
   --sw-ink-soft: rgba(255,255,255,.72);

@@ -10,7 +10,16 @@
   // lighter 640px versions for phones. Bump V whenever the clip files change.
   var V = '?v=2';
 
-  mountScrollWorld(host, {
+  // Build the section once the page has loaded and the browser is idle (it sits ~13
+  // screens down, so there is no rush, and building it during the first paint slowed
+  // the page). Its height is reserved in CSS (.world min-height) so links to the
+  // sections below land in the right place either way. A link straight to a section
+  // (#world, #about, …) builds it immediately.
+  var mounted = false, wantPreload = false;
+  function mount() {
+    if (mounted) return;
+    mounted = true;
+    mountScrollWorld(host, {
     embedded: true,
     // slow connection / Data Saver (detected in smooth.js): stills only, no video download
     stillsOnly: !!window.roomiesLite,
@@ -44,7 +53,20 @@
     ],
     // Each clip already glides into the next room, so no separate connectors.
     connectors: [null, null]
-  });
+    });
+    if (wantPreload) startPreload();
+  }
+  function idle(fn) { (window.requestIdleCallback || function (f) { return setTimeout(f, 200); })(fn, { timeout: 1500 }); }
+  if (location.hash && location.hash.length > 1) mount();
+  else if (document.readyState === 'complete') idle(mount);
+  else window.addEventListener('load', function () { idle(mount); }, { once: true });
+  // safety net: never let a fast scroller reach the section before it is built
+  window.addEventListener('scroll', function onNear() {
+    if (host.getBoundingClientRect().top < window.innerHeight * 3) {
+      window.removeEventListener('scroll', onNear);
+      mount();
+    }
+  }, { passive: true });
 
   // Preload the walkthrough clips well before the visitor gets here (the section
   // starts ~13 screens down). Start once the hero video has finished downloading AND
@@ -52,7 +74,7 @@
   // visitor does that long before reaching this section, while the initial page load
   // stays light. Scrolling past the hero starts it regardless. Clips then load one
   // at a time in scroll order.
-  function startPreload() { if (host.swPreload) host.swPreload(); }
+  function startPreload() { if (host.swPreload) host.swPreload(); else wantPreload = true; }
   var heroDone = !!window.roomiesHeroDone, engaged = false;
   function maybeStart() { if (heroDone && engaged) startPreload(); }
   if (!heroDone) window.addEventListener('roomies:hero-done', function () { heroDone = true; maybeStart(); }, { once: true });
