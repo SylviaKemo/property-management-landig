@@ -57,9 +57,14 @@
     if (wantPreload) startPreload();
   }
   function idle(fn) { (window.requestIdleCallback || function (f) { return setTimeout(f, 200); })(fn, { timeout: 1500 }); }
+  // Build on the visitor's first scroll / tap / key (in idle time) — they are then
+  // still ~13 screens away. A link straight to a section builds it immediately.
   if (location.hash && location.hash.length > 1) mount();
-  else if (document.readyState === 'complete') idle(mount);
-  else window.addEventListener('load', function () { idle(mount); }, { once: true });
+  else {
+    ['scroll', 'wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(function (ev) {
+      window.addEventListener(ev, function () { idle(mount); }, { once: true, passive: true });
+    });
+  }
   // safety net: never let a fast scroller reach the section before it is built
   window.addEventListener('scroll', function onNear() {
     if (host.getBoundingClientRect().top < window.innerHeight * 3) {

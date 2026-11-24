@@ -314,9 +314,23 @@
       io.unobserve(e.target);
     });
   }, { threshold: 0.15 });
-  $$(".reveal, [data-split]").forEach((el) => io.observe(el));
+  $$(".reveal").forEach((el) => io.observe(el));
 
   /* ---------------- about: word-split title + scroll-lit lead ---------------- */
+  // Set up only when the visitor gets within ~2 screens of the About section (it is
+  // far down the page), and while it is near, update only the letters that change.
+  let scrubs = [], aboutNear = false;
+  const aboutEl = $("#about");
+  if (aboutEl && "IntersectionObserver" in window) {
+    let ready = false;
+    new IntersectionObserver((entries) => {
+      aboutNear = entries[0].isIntersecting;
+      if (aboutNear && !ready) { ready = true; setupAbout(); }
+      if (aboutNear) updateScrub();
+    }, { rootMargin: "1600px 0px" }).observe(aboutEl);
+  } else setupAbout();
+
+  function setupAbout() {
   // Title: each word is a mask; its letters rise in one after another (--i counts
   // letters across the whole title so the stagger runs straight through).
   $$("[data-split]").forEach((el) => {
@@ -326,10 +340,11 @@
       .map((w) => `<span class="w" aria-hidden="true">${[...w]
         .map((ch) => `<span style="--i:${n++}">${ch}</span>`).join("")}</span>`)
       .join(" ");
+    io.observe(el);
   });
   // Lead paragraph: wrap every word (keeping <strong> emphasis); words switch on
   // progressively as the paragraph travels up through the middle of the screen.
-  const scrubs = $$("[data-scrub]").map((el) => {
+  scrubs = $$("[data-scrub]").map((el) => {
     const wrap = (node) => {
       [...node.childNodes].forEach((n) => {
         if (n.nodeType === 3) {
@@ -349,22 +364,31 @@
       });
     };
     wrap(el);
-    return { el, words: $$(".sw", el) };
+    return { el, words: $$(".sw", el), lit: 0 };
   });
+  updateScrub();
+  }
   const reduceText = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let scrubTick = false;
   function updateScrub() {
-    scrubs.forEach(({ el, words }) => {
-      const r = el.getBoundingClientRect();
+    scrubTick = false;
+    scrubs.forEach((s) => {
+      const r = s.el.getBoundingClientRect();
       // 0 when the paragraph's top reaches 85% of the screen, 1 when its bottom reaches 45%
       const start = innerHeight * 0.85, end = innerHeight * 0.45;
       const p = reduceText ? 1 : Math.min(1, Math.max(0, (start - r.top) / (start - end + r.height)));
-      const lit = Math.round(p * words.length);
-      words.forEach((w, i) => w.classList.toggle("on", i < lit));
+      const lit = Math.round(p * s.words.length);
+      if (lit === s.lit) return;
+      // only touch the letters whose state changed
+      const [a, b] = lit > s.lit ? [s.lit, lit] : [lit, s.lit];
+      for (let i = a; i < b; i++) s.words[i].classList.toggle("on", lit > s.lit);
+      s.lit = lit;
     });
   }
-  addEventListener("scroll", () => requestAnimationFrame(updateScrub), { passive: true });
-  addEventListener("resize", updateScrub);
-  updateScrub();
+  addEventListener("scroll", () => {
+    if (aboutNear && !scrubTick) { scrubTick = true; requestAnimationFrame(updateScrub); }
+  }, { passive: true });
+  addEventListener("resize", () => { if (aboutNear) updateScrub(); });
 
   const counterIO = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
